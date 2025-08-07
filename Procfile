@@ -1,1 +1,1 @@
-web: java -cp "target/dependency/*:target/*.jar" com.example.Main
+java -cp "target/dependency/*;target/jetty-heroku-example-1.0-SNAPSHOT.jar" com.example.Main
