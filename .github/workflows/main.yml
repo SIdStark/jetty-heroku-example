@@ -26,25 +26,16 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
-      # 4. Deploy the built JAR file to Heroku
+      # 4. Install the Heroku CLI
+      - name: Install Heroku CLI
+        uses: heroku/setup-heroku-cli@v1
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+
+      # 5. Deploy the built JAR file to Heroku
       - name: Deploy JAR to Heroku
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
         run: |
-          # Create a .netrc file for Heroku CLI authentication
-          cat <<EOF > ~/.netrc
-            machine api.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-            machine git.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-          EOF
-          
-          # Install the Heroku Java plugin to get the jar:deploy command
           heroku plugins:install java
-          
-          # Deploy the JAR file. The wildcard finds the generated JAR.
           heroku jar:deploy target/*.jar --app $HEROKU_APP_NAME
